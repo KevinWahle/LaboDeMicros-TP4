@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include "Magtek.h"
 
+#include <os.h>
+#include "os_cfg_app.h"
+
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
@@ -28,19 +31,30 @@ static void new_callback (bool state, const data* data);
  * STATIC VARIABLES AND CONST VARIABLES WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-static WrapperCardCb newMainCb;
+//static WrapperCardCb newMainCb;
 static char newId[ID_SIZE+1];
+
+
+static OS_ERR os_err;
+
+/*******************************************************************************
+ * GLOABAL VARIABLES
+ ******************************************************************************/
+
+OS_Q magtekQ;
 
 /*******************************************************************************
  *******************************************************************************
                         GLOBAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
-bool Card2Init(WrapperCardCb funCb){
-	if (funCb==NULL)
-		return false;
+bool Card2Init(){
+
+    /* Create message queue */
+    OSQCreate(&magtekQ, "Magtek Q", OS_CFG_MSG_POOL_SIZE, &os_err);
+
 	CardInit(new_callback);
-	newMainCb=funCb;
+
 	return true;
 }
 
@@ -65,8 +79,11 @@ void new_callback (bool state, const data* data){
 				newId[i]='0';
 			}
 		}
-		newMainCb(state, newId);
+		//newMainCb(state, newId);
+		OSQPost(&magtekQ, newId, ID_SIZE+1, OS_OPT_POST_ALL, &os_err);
 	}
 	else
-		newMainCb(state, NULL);
+		//newMainCb(state, NULL);
+		OSQPost(&magtekQ, NULL, 0, OS_OPT_POST_ALL, &os_err);
+
 }

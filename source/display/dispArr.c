@@ -10,10 +10,12 @@
 
 #include "dispArr.h"
 #include "dispDigits.h"
-#include "timer/timer.h"
+// #include "timer/timer.h"
 #include "MCAL/gpio.h"
 #include <stdlib.h>
 #include <string.h>
+
+#include <os.h>
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
@@ -56,7 +58,7 @@
 #define BLINK_TIME	500	// 1/2 period of blink (milliseconds)
 
 
-#define PISR_TIME	0.5	// Time of the PISR (milliseconds)
+#define PISR_TIME	1	// Time of the PISR (milliseconds)
 
 
 #define DISP_CYC	(DISP_TIME/PISR_TIME)
@@ -129,11 +131,21 @@ static bool blinkOff = false;
 static bool dutyOff = false;
 
 
+/* Display Task */
+#define TASK_STK_SIZE			256u
+#define TASK_STK_SIZE_LIMIT	(TASK_STK_SIZE / 10u)
+#define TASK_PRIO              3u
+static OS_TCB displayTask;
+static CPU_STK TaskStk[TASK_STK_SIZE];
+
+static OS_ERR os_err;
+
+
 /*******************************************************************************
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-static void dispPISR();
+static void dispPISR(void *p_arg);
 
 /**
  * @brief Set the control output to select the desired display. Control is assumed to be a MUX.
@@ -189,8 +201,23 @@ bool dispArrInit() {
 	dispArrClear();		// Set to clear mode
 
 	// Init timer for PISR
-	timerInit();
-	timerStart(timerGetId(), TIMER_MS2TICKS(PISR_TIME), TIM_MODE_PERIODIC, dispPISR);
+	// timerInit();
+	// timerStart(timerGetId(), TIMER_MS2TICKS(PISR_TIME), TIM_MODE_PERIODIC, dispPISR);
+    /* Create Task */
+
+    OSTaskCreate(&displayTask, 			//tcb
+                 "Encoder Task",		//name
+                  dispPISR,			//func
+                  0u,					//arg
+                  TASK_PRIO,			//prio
+                 &TaskStk[0u],			//stack
+                  TASK_STK_SIZE_LIMIT,	//stack limit
+                  TASK_STK_SIZE,		//stack size
+                  0u,
+                  0u,
+                  0u,
+                 (OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+                 &os_err);
 
 	return true;
 
@@ -386,84 +413,88 @@ void dispArrClear() {
  *******************************************************************************
  ******************************************************************************/
 
-static void dispPISR() {
+static void dispPISR(void *p_arg) {
 
-	switch (actualMode) {
-		case SHOW:
-			// Do nothing
-			break;
+	while (1) {
 
-		case TIMED:
+		switch (actualMode) {
+			case SHOW:
+				// Do nothing
+				break;
 
-			if (!timedShowCont) {	// Time elapsed
-				dispArrClear();			// set mode to clear
+			case TIMED:
+
+				if (!timedShowCont) {	// Time elapsed
+					dispArrClear();			// set mode to clear
+				}
+				else {
+					timedShowCont--;
+				}
+
+				break;
+
+			case LOOP:
+			case ONCE:
+
+				if (!transCont) {
+					transCont = TRANS_CYC-1;
+					loopDigits();
+				}
+				else {
+					transCont--;
+				}
+
+				break;
+
+			case SELECT:
+				// Do nothing
+				break;
+
+			case BLINK:
+
+				if (!blinkCont) {
+
+					actualDigits[selectedIndex] = blinkOff ? DISP_OFF : selectedChar;	// Change selected digit
+
+					blinkOff = !blinkOff;
+
+					blinkCont = BLINK_CYC-1;
+				}
+				else {
+					blinkCont--;
+				}
+				break;
+
+			default:
+				break;
+		}
+
+		// Display rolling and brightness control.
+		if (actualBright) {
+			if (!dispCont) {
+				rollDisplay();	// actualDisp increment
+				dispCont = DISP_CYC-1;
+
+				dutyCont = ((double)actualBright/MAX_BRIGHT)*DISP_CYC;	// Duty reset
+				dutyOff = false;
 			}
 			else {
-				timedShowCont--;
+				dispCont--;
 			}
 
-			break;
-
-		case LOOP:
-		case ONCE:
-
-			if (!transCont) {
-				transCont = TRANS_CYC-1;
-				loopDigits();
+			if (!dutyCont) {
+				if (!dutyOff) {
+					dispShow(segments, DISP_OFF);		// Turn off actual display
+					dutyOff = true;		// Dont do it again until next display
+				}
 			}
 			else {
-				transCont--;
+				dutyCont--;
 			}
-
-			break;
-
-		case SELECT:
-			// Do nothing
-			break;
-
-		case BLINK:
-
-			if (!blinkCont) {
-
-				actualDigits[selectedIndex] = blinkOff ? DISP_OFF : selectedChar;	// Change selected digit
-
-				blinkOff = !blinkOff;
-
-				blinkCont = BLINK_CYC-1;
-			}
-			else {
-				blinkCont--;
-			}
-			break;
-
-		default:
-			break;
+		}
+		
+	    OSTimeDlyHMSM(0u, 0u, 0u, PISR_TIME, OS_OPT_TIME_DLY, &os_err);
 	}
-
-	// Display rolling and brightness control.
-	if (actualBright) {
-		if (!dispCont) {
-			rollDisplay();	// actualDisp increment
-			dispCont = DISP_CYC-1;
-
-			dutyCont = ((double)actualBright/MAX_BRIGHT)*DISP_CYC;	// Duty reset
-			dutyOff = false;
-		}
-		else {
-			dispCont--;
-		}
-
-		if (!dutyCont) {
-			if (!dutyOff) {
-				dispShow(segments, DISP_OFF);		// Turn off actual display
-				dutyOff = true;		// Dont do it again until next display
-			}
-		}
-		else {
-			dutyCont--;
-		}
-	}
-
 }
 
 /**

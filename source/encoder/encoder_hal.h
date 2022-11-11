@@ -12,6 +12,7 @@
  ******************************************************************************/
 
 #include <stdbool.h>
+#include <os.h>
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
@@ -20,7 +21,13 @@
 // Differents events supported by the encoder module
 typedef enum {ENC_LEFT, ENC_RIGHT, ENC_CLICK, ENC_LONG, ENC_DOUBLE} ENC_STATE;
 
-typedef void (*encoderCb) (ENC_STATE state);
+// typedef void (*encoderCb) (ENC_STATE state);
+
+/*******************************************************************************
+ * GLOBAL VARIABLES
+ ******************************************************************************/
+
+extern OS_Q encoderQ;
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
@@ -30,7 +37,7 @@ typedef void (*encoderCb) (ENC_STATE state);
  * @brief Initializes encoder module
  * @param callback for new event notification
  */
-bool encoderInit( encoderCb funCb );
+bool encoderInit();
 
 
 /*******************************************************************************

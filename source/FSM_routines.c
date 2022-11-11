@@ -14,7 +14,7 @@
 #include "encoder/encoder_hal.h"
 #include "const.h"
 #include "userDatabase.h"
-#include "timer/timer.h"
+//#include "timer/timer.h"
 #include <stdio.h>
 #include "display/dispArr.h"
 #include "LEDMux/LEDMux.h"

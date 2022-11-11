@@ -12,12 +12,14 @@
  ******************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
-
+#include <os.h>
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 
-typedef void (*WrapperCardCb) (bool state, const char* mydata);
+//typedef void (*WrapperCardCb) (bool state, const char* mydata);
+
+extern OS_Q magtekQ;
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
@@ -25,10 +27,9 @@ typedef void (*WrapperCardCb) (bool state, const char* mydata);
 
 /**
  * @brief: Initialize pins and set intrruption for Magtek
- * @param fubCb Callback to return the data
  * @return initialization succeed
 */
-bool Card2Init(WrapperCardCb funCb);
+bool Card2Init();
 
 /*******************************************************************************
  ******************************************************************************/

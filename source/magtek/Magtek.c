@@ -13,13 +13,15 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "MCAL/gpio.h"
-#include "timer/timer.h"
+// #include "timer/timer.h"
+
+#include <os.h>
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 
-#define ENABLE_TP
+// #define ENABLE_TP
 
 #define DATA	PORTNUM2PIN(PA,1)
 #define CLK		PORTNUM2PIN(PB,9)
@@ -70,7 +72,7 @@ enum {SS, PAN, FS, ADDIT, DISCR, ES, ERROR, NOTDATA};
 static void clkCb ();
 
 // Callback called when enable interrupts. Cancells reading
-static void enCb ();
+static void enCb (void *p_arg);
 
 // Process the data stored in the buffer
 static void readbuff();
@@ -89,9 +91,24 @@ static buffer mybuffer;
 static uint32_t buff_count;
 static data mydata;
 static cardCb mainCb;
-static tim_id_t timer_id;
+// static tim_id_t timer_id;
 static uint8_t status;
 static bool read;
+
+
+/* Display Task */
+#define TASK_STK_SIZE			256u
+#define TASK_STK_SIZE_LIMIT	(TASK_STK_SIZE / 10u)
+#define TASK_PRIO              3u
+static OS_TCB magtekTask;
+static CPU_STK TaskStk[TASK_STK_SIZE];
+
+static OS_SEM magtekSem;
+
+static OS_ERR os_err;
+
+
+
 
 /*******************************************************************************
  *******************************************************************************
@@ -112,11 +129,11 @@ bool CardInit(cardCb funCb){
 	gpioMode(TESTPIN, OUTPUT);
 #endif
 
-	timerInit();
+	// timerInit();
 
 	gpioIRQ(CLK, GPIO_IRQ_MODE_FALLING_EDGE, clkCb);	//Set clock falling edge interruption
 
-	timer_id = timerGetId();
+	// timer_id = timerGetId();
 
 	mainCb=funCb;
 
@@ -126,6 +143,25 @@ bool CardInit(cardCb funCb){
 	read=false;					// Reset variables
 	buff_count=RESET;
 	status = SS;
+
+    // Semaforo para habilitar chequeo periodico
+    OSSemCreate(&magtekSem, "Magtek Sem", 0u, &os_err);
+
+    /* Create Task */
+    OSTaskCreate(&magtekTask, 			//tcb
+                 "Magtek Task",			//name
+                  enCb,					//func
+                  0u,					//arg
+                  TASK_PRIO,			//prio
+                 &TaskStk[0u],			//stack
+                  TASK_STK_SIZE_LIMIT,	//stack limit
+                  TASK_STK_SIZE,		//stack size
+                  0u,
+                  0u,
+                  0u,
+                 (OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+                 &os_err);
+
 	return true;
 }
 
@@ -156,10 +192,18 @@ void clkCb (){
 
 }
 
-void enCb (){
-	if (gpioRead(ENABLE)){
-		status=SS;
-		timerStop(timer_id);
+void enCb (void *p_arg){
+
+	while (1) {
+
+		if (gpioRead(ENABLE)){
+			status=SS;
+			OSSemPend(&magtekSem, 0U, OS_OPT_PEND_BLOCKING, NULL, &os_err);		// Espero reactivacion
+		}
+		else {
+			OSTimeDlyHMSM(0U, 0U, 0U, 100U, OS_OPT_TIME_DLY, &os_err);	// PISR time
+		}
+
 	}
 }
 
@@ -168,7 +212,8 @@ void readbuff(){
 
 	if (mybuffer.buff==SEMICOLON && status==SS)			// ; starts the reading
 	{
-		timerStart(timer_id, TIMER_MS2TICKS(100), TIM_MODE_PERIODIC, enCb);
+		// timerStart(timer_id, TIMER_MS2TICKS(100), TIM_MODE_PERIODIC, enCb);
+		OSSemPost(&magtekSem, OS_OPT_POST_ALL, &os_err);	// Enable periodic check
 		i=RESET;
 		buff_count=RESET;
 		read=false;
@@ -254,9 +299,12 @@ void readbuff(){
 		if (status==ES || status==ERROR){		// If end or Error return
 			if (status==ES){
 				mainCb(true, &mydata);
+				//OSQPost(&magtekQ, mydata.id, PAN_MAX_L, OS_OPT_POST_ALL, &os_err);
+
 			}
 			if  (status==ERROR){
 				mainCb(false, NULL);
+				//OSQPost(&magtekQ, NULL, 0, OS_OPT_POST_ALL, &os_err);
 			}
 			clear();							//Clear matrix and reset variables
 			status = NOTDATA;

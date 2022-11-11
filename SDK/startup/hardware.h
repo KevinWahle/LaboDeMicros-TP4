@@ -22,6 +22,7 @@
 #include "fsl_device_registers.h"
 
 #define __CORE_CLOCK__ 	100000000U
+#define __ISR__         void __attribute__ ((interrupt))
 
 void hw_Init (void);
 
