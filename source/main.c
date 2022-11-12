@@ -1,4 +1,5 @@
 #include "hardware.h"
+#include "MCAL/board.h"
 #include  <os.h>
 
 // #include "const.h"
@@ -10,12 +11,33 @@
 #include "display/dispArr.h"
 #include "encoder/encoder_hal.h"
 // #include "LEDMux/LEDMux.h"
+#include <stddef.h>
 
 /* Task Start */
 #define TASKSTART_STK_SIZE 		512u
 #define TASKSTART_PRIO 			2u
 static OS_TCB TaskStartTCB;
 static CPU_STK TaskStartStk[TASKSTART_STK_SIZE];
+
+/* Task 2 */
+#define TASK2_STK_SIZE			256u
+#define TASK2_STK_SIZE_LIMIT	(TASK2_STK_SIZE / 10u)
+#define TASK2_PRIO              3u
+static OS_TCB Task2TCB;
+static CPU_STK Task2Stk[TASK2_STK_SIZE];
+
+
+static void Task2(void *p_arg) {
+    (void)p_arg;
+    OS_ERR os_err;
+
+    OS_MSG_SIZE size;
+
+    while (1) {
+        OSQPend(&magtekQ, 0U, OS_OPT_PEND_BLOCKING, &size, NULL, &os_err);
+        gpioToggle(PIN_LED_RED);
+    }
+}
 
 
 static void TaskStart(void *p_arg) {
@@ -38,8 +60,23 @@ static void TaskStart(void *p_arg) {
     Card2Init();
     encoderInit();
 
-    while (1) {
+    /* Create Task2 */
+    OSTaskCreate(&Task2TCB, 			//tcb
+                 "Task 2",				//name
+                  Task2,				//func
+                  0u,					//arg
+                  TASK2_PRIO,			//prio
+                 &Task2Stk[0u],			//stack
+                  TASK2_STK_SIZE_LIMIT,	//stack limit
+                  TASK2_STK_SIZE,		//stack size
+                  0u,
+                  0u,
+                  0u,
+                 (OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+                 &os_err);
 
+    while (1) {
+        OSTimeDlyHMSM(1u, 0u, 0u, 0u, OS_OPT_TIME_HMSM_STRICT, &os_err);
     }
 }
 
@@ -60,6 +97,7 @@ int main(void) {
     OS_CPU_SysTickInit(SystemCoreClock / (uint32_t)OSCfg_TickRate_Hz);
 
 
+    gpioMode(PIN_LED_RED, OUTPUT);
 
 
    OSTaskCreate(&TaskStartTCB,
