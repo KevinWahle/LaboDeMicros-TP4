@@ -35,6 +35,10 @@ static OS_TCB card2EventTask;
 static CPU_STK Task3Stk[TASK3_STK_SIZE];
 
 
+void App_Init (void);
+void App_Run (void);
+
+
 static void encoderTask(void *p_arg) {
     (void)p_arg;
     OS_ERR os_err;
@@ -133,7 +137,7 @@ int main(void) {
                 "App Task Start",
                  TaskStart,
                  0u,
-                30u,  //  TASKSTART_PRIO,
+                20u,  //  TASKSTART_PRIO,
                 &TaskStartStk[0u],
                 (TASKSTART_STK_SIZE / 10u),
                  TASKSTART_STK_SIZE,

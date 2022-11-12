@@ -17,7 +17,8 @@
 #include "magtek/MagtekWrapper.h"
 #include "display/dispArr.h"
 #include "encoder/encoder_hal.h"
-#include "LEDMux/LEDMux.h"
+//#include "LEDMux/LEDMux.h"
+#include "IOT/IOT.h"
 
 /*******************************************************************************
  *******************************************************************************
@@ -43,6 +44,7 @@ void App_Init (void)
 	dispArrInit();
 	init_Database();
     setUpIDTimer();
+    IOTInit();
 
 	p_tabla_estado_actual = ID_state;
 	id_init();

@@ -70,6 +70,7 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value=""/>
+									<listOptionValue builtIn="false" value="SDK_DEBUGCONSOLE=0"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.569371657" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" useByScannerDiscovery="false"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.999642032" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
@@ -219,7 +220,7 @@
 								<option id="com.crt.advproject.link.crpenable.1787641256" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.crpenable" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.link.flashconfigenable.1102260985" name="Enable automatic placement of Flash Configuration field in image" superClass="com.crt.advproject.link.flashconfigenable" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="com.crt.advproject.link.ecrp.579736897" name="Enhanced CRP" superClass="com.crt.advproject.link.ecrp" useByScannerDiscovery="false"/>
-								<option id="com.crt.advproject.link.gcc.hdrlib.2095579941" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib" useByScannerDiscovery="false"/>
+								<option id="com.crt.advproject.link.gcc.hdrlib.2095579941" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gcc.link.hdrlib.codered.semihost" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.gcc.nanofloat.1771243802" name="Enable printf float " superClass="com.crt.advproject.link.gcc.nanofloat" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.link.gcc.nanofloat.scanf.1813334207" name="Enable scanf float " superClass="com.crt.advproject.link.gcc.nanofloat.scanf" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.link.toram.2021907397" name="Link application to RAM" superClass="com.crt.advproject.link.toram" useByScannerDiscovery="false"/>
@@ -240,7 +241,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="SDK"/>
-						<entry excluding="FSM_routines.c|LEDMux|App.c|timer|magtek/CardTest.c|LEDMux/LEDMuxTest.c|display/dispTest.c|display/dispEncTest.c|ucosiii_config/os_app_hooks.c|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/RealView|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/IAR|rtos/uCOSIII/src/uC-LIB/lib_str.c|rtos/uCOSIII/src/uC-LIB/lib_mem.c|rtos/uCOSIII/src/uC-LIB/lib_math.c|rtos/uCOSIII/src/uC-LIB/lib_ascii.c|rtos/uCOSIII/src/uC-LIB/Ports|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/RealView|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/IAR|Micrium/Software/uC-LIB/lib_str.c|Micrium/Software/uC-LIB/lib_mem.c|Micrium/Software/uC-LIB/lib_math.c|Micrium/Software/uC-LIB/lib_ascii.c|Micrium/Software/uC-LIB/Ports|rtos/uC-LIB/Ports/ARM-Cortex-M4/GNU/lib_mem_a.s|rtos/uC-LIB/lib_str.c|rtos/uC-LIB/lib_mem.c|rtos/uC-LIB/lib_math.c|rtos/uC-LIB/lib_ascii.c" flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="source"/>
+						<entry excluding="UART/uartTest.c|LEDMux|timer|magtek/CardTest.c|LEDMux/LEDMuxTest.c|display/dispTest.c|display/dispEncTest.c|ucosiii_config/os_app_hooks.c|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/RealView|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/IAR|rtos/uCOSIII/src/uC-LIB/lib_str.c|rtos/uCOSIII/src/uC-LIB/lib_mem.c|rtos/uCOSIII/src/uC-LIB/lib_math.c|rtos/uCOSIII/src/uC-LIB/lib_ascii.c|rtos/uCOSIII/src/uC-LIB/Ports|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/RealView|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/IAR|Micrium/Software/uC-LIB/lib_str.c|Micrium/Software/uC-LIB/lib_mem.c|Micrium/Software/uC-LIB/lib_math.c|Micrium/Software/uC-LIB/lib_ascii.c|Micrium/Software/uC-LIB/Ports|rtos/uC-LIB/Ports/ARM-Cortex-M4/GNU/lib_mem_a.s|rtos/uC-LIB/lib_str.c|rtos/uC-LIB/lib_mem.c|rtos/uC-LIB/lib_math.c|rtos/uC-LIB/lib_ascii.c" flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="source"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -313,6 +314,7 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
 									<listOptionValue builtIn="false" value=""/>
+									<listOptionValue builtIn="false" value="SDK_DEBUGCONSOLE=0"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.30112296" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" useByScannerDiscovery="false"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.41870166" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
@@ -457,7 +459,7 @@
 								<option id="com.crt.advproject.link.crpenable.507060579" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.crpenable"/>
 								<option id="com.crt.advproject.link.flashconfigenable.1839239902" name="Enable automatic placement of Flash Configuration field in image" superClass="com.crt.advproject.link.flashconfigenable" value="true" valueType="boolean"/>
 								<option id="com.crt.advproject.link.ecrp.543203463" name="Enhanced CRP" superClass="com.crt.advproject.link.ecrp"/>
-								<option id="com.crt.advproject.link.gcc.hdrlib.1099362733" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gcc.link.hdrlib.none" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.gcc.hdrlib.1099362733" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gcc.link.hdrlib.codered.semihost" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.gcc.nanofloat.1956301876" name="Enable printf float " superClass="com.crt.advproject.link.gcc.nanofloat"/>
 								<option id="com.crt.advproject.link.gcc.nanofloat.scanf.661792882" name="Enable scanf float " superClass="com.crt.advproject.link.gcc.nanofloat.scanf"/>
 								<option id="com.crt.advproject.link.toram.1837132720" name="Link application to RAM" superClass="com.crt.advproject.link.toram"/>
@@ -478,7 +480,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="startup" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="SDK"/>
-						<entry excluding="FSM_routines.c|LEDMux|App.c|timer|magtek/CardTest.c|LEDMux/LEDMuxTest.c|display/dispTest.c|display/dispEncTest.c|ucosiii_config/os_app_hooks.c|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/RealView|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/IAR|rtos/uCOSIII/src/uC-LIB/lib_str.c|rtos/uCOSIII/src/uC-LIB/lib_mem.c|rtos/uCOSIII/src/uC-LIB/lib_math.c|rtos/uCOSIII/src/uC-LIB/lib_ascii.c|rtos/uCOSIII/src/uC-LIB/Ports|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/RealView|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/IAR|Micrium/Software/uC-LIB/lib_str.c|Micrium/Software/uC-LIB/lib_mem.c|Micrium/Software/uC-LIB/lib_math.c|Micrium/Software/uC-LIB/lib_ascii.c|Micrium/Software/uC-LIB/Ports|rtos/uC-LIB/Ports/ARM-Cortex-M4/GNU/lib_mem_a.s|rtos/uC-LIB/lib_str.c|rtos/uC-LIB/lib_mem.c|rtos/uC-LIB/lib_math.c|rtos/uC-LIB/lib_ascii.c" flags="LOCAL|VALUE_WORKSPACE_PATH" kind="sourcePath" name="source"/>
+						<entry excluding="UART/uartTest.c|LEDMux|timer|magtek/CardTest.c|LEDMux/LEDMuxTest.c|display/dispTest.c|display/dispEncTest.c|ucosiii_config/os_app_hooks.c|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/RealView|rtos/uCOSIII/src/uCOS-III/Ports/ARM-Cortex-M4/Generic/IAR|rtos/uCOSIII/src/uC-LIB/lib_str.c|rtos/uCOSIII/src/uC-LIB/lib_mem.c|rtos/uCOSIII/src/uC-LIB/lib_math.c|rtos/uCOSIII/src/uC-LIB/lib_ascii.c|rtos/uCOSIII/src/uC-LIB/Ports|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/RealView|rtos/uCOSIII/src/uC-CPU/ARM-Cortex-M4/IAR|Micrium/Software/uC-LIB/lib_str.c|Micrium/Software/uC-LIB/lib_mem.c|Micrium/Software/uC-LIB/lib_math.c|Micrium/Software/uC-LIB/lib_ascii.c|Micrium/Software/uC-LIB/Ports|rtos/uC-LIB/Ports/ARM-Cortex-M4/GNU/lib_mem_a.s|rtos/uC-LIB/lib_str.c|rtos/uC-LIB/lib_mem.c|rtos/uC-LIB/lib_math.c|rtos/uC-LIB/lib_ascii.c" flags="LOCAL|VALUE_WORKSPACE_PATH" kind="sourcePath" name="source"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
