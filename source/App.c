@@ -17,7 +17,7 @@
 #include "magtek/MagtekWrapper.h"
 #include "display/dispArr.h"
 #include "encoder/encoder_hal.h"
-//#include "LEDMux/LEDMux.h"
+#include "LEDMux/LEDMux.h"
 #include "IOT/IOT.h"
 
 /*******************************************************************************
@@ -40,11 +40,12 @@ void App_Init (void)
 	// timerInit();
 	Card2Init();
 	encoderInit();
-	// LEDMuxInit();
+	LEDMuxInit();
 	dispArrInit();
 	init_Database();
     setUpIDTimer();
     IOTInit();
+    init_queue();
 
 	p_tabla_estado_actual = ID_state;
 	id_init();
@@ -54,7 +55,7 @@ void App_Init (void)
 /* Función que se llama constantemente en un ciclo infinito */
 void App_Run (void)
 {
-	event_t evento = get_next_event();  // Tomo un nuevo evento de la cola de eventos.
+	event_t evento = wait_for_event();  // Espera nuevo evento de la cola de eventos.
 	p_tabla_estado_actual = fsm_interprete(p_tabla_estado_actual, evento);  // Actualizo el estado
 }
 

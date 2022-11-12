@@ -11,6 +11,9 @@
 #include "event_queue.h"
 
 #include <os.h>
+#include "os_cfg_app.h"
+
+#include <stddef.h>
 
 #ifdef TEST     // Solo si se define TEST (-D TEST)
 #include <stdio.h>  // Solo para TEST
@@ -20,11 +23,11 @@
  * STATIC VARIABLES AND CONST VARIABLES WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-static event_t queue[MAX_EVENTS];               // Arreglo con la lista de eventos.
+//static event_t queue[MAX_EVENTS];               // Arreglo con la lista de eventos.
 
-static unsigned long int top_of_queue = 0;      // Indicador de la cantidad de eventos guardados.
+//static unsigned long int top_of_queue = 0;      // Indicador de la cantidad de eventos guardados.
 
-static OS_MUTEX mutex;
+static OS_Q queueOS;
 static OS_ERR os_err;
 
 /*******************************************************************************
@@ -35,100 +38,107 @@ static OS_ERR os_err;
 
 
 void init_queue() {
-    OSMutexCreate(&mutex, "EQ Mutex", &os_err);
+	OSQCreate(&queueOS, "Event q Q", OS_CFG_MSG_POOL_SIZE, &os_err);
 }
 
 
 int add_event(event_t event) {
 
-    // OSMutexPend(&mutex, 0U, );
 
-    if (top_of_queue < MAX_EVENTS) {        // Si hay lugar en la cola
-        for (int i = top_of_queue; i > 0 ; i--) {
-            queue[i] = queue[i-1];              // Muevo todos los eventos 1 posición
-        }
-        top_of_queue++;                         // Aumento tamaño de la cola (Apunta a proximo espacio libre)
-        queue[0] = event;   // Agrego el nuevo evento al inicio
-        return 0;   // Fin exitoso
-    }    
-    return 1;       // Error, no hay lugar
+	OSQPost(&queueOS, (void*)((uint32_t)event), 0, OS_OPT_POST_FIFO, &os_err);
+	return os_err != OS_ERR_NONE;
+//    if (top_of_queue < MAX_EVENTS) {        // Si hay lugar en la cola
+//        for (int i = top_of_queue; i > 0 ; i--) {
+//            queue[i] = queue[i-1];              // Muevo todos los eventos 1 posición
+//        }
+//        top_of_queue++;                         // Aumento tamaño de la cola (Apunta a proximo espacio libre)
+//        queue[0] = event;   // Agrego el nuevo evento al inicio
+//        return 0;   // Fin exitoso
+//    }
+//    return 1;       // Error, no hay lugar
 }
 
-event_t get_next_event(void) {
-    if (top_of_queue > 0) {     // Si hay eventos en la cola
-        return queue[--top_of_queue];   // Devuelve ultimo evento y lo elimino de la cola
-    }
-    return NULL_EVENT;  // No hay eventos
+//event_t get_next_event(void) {
+//    if (top_of_queue > 0) {     // Si hay eventos en la cola
+//        return queue[--top_of_queue];   // Devuelve ultimo evento y lo elimino de la cola
+//    }
+//    return NULL_EVENT;  // No hay eventos
+//}
+
+
+event_t wait_for_event(void) {
+	OS_MSG_SIZE size;
+	return (event_t)((uint32_t)OSQPend(&queueOS, 0U, OS_OPT_PEND_BLOCKING, &size, NULL, &os_err));
 }
 
-int skip_event(void) {
-    if (top_of_queue > 0) {     // Si hay elementos en la cola
-        top_of_queue--;             // Se elimina el último elemento
-        return 0;       // Fin exitoso
-    }
-    return 1;           // Error, no hay elementos
-}
+//int skip_event(void) {
+//    if (top_of_queue > 0) {     // Si hay elementos en la cola
+//        top_of_queue--;             // Se elimina el último elemento
+//        return 0;       // Fin exitoso
+//    }
+//    return 1;           // Error, no hay elementos
+//}
 
-void empty_queue(void) {
-    top_of_queue = 0;
-}
-
-int is_queue_empty(void) {
-    return top_of_queue == 0;
-}
+//void empty_queue(void) {
+//    top_of_queue = 0;
+//}
+//
+//int is_queue_empty(void) {
+//    return top_of_queue == 0;
+//}
 
 /*******************************************************************************
  *******************************************************************************
                         LOCAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
-
-#ifdef TEST     // Sólo si se define TEST
-                // Es la prueba para verificar el funcionamiento de la librería.
-
-    static void printArray (event_t array[], unsigned int size) {
-        printf("[ ");
-        for (int i = 0; i < size; i++) {
-            printf("%u ", array[i]);
-        }
-        printf("]\n");
-    }
-
-    int main() {
-        for (int i = 1 ; i < 10 ; i++) {
-            add_event(i);
-            printArray(queue, 10);
-            printf("%I64u", top_of_queue);
-            for (int j = 0; j < 2*top_of_queue+1; j++)
-                printf(" ");
-            printf("^\n");
-        }
-        printf("\n\n");
-        for (int i = 0 ; i < 10 ; i++) {
-            printf("%u\n", get_next_event());
-            printArray(queue, 10);
-            printf("%I64u", top_of_queue);
-            for (int j = 0; j < 2*top_of_queue+1; j++)
-                printf(" ");
-            printf("^\n\n");
-        }
-        add_event(7);
-        printArray(queue, 10);
-        printf("%I64u", top_of_queue);
-        for (int j = 0; j < 2*top_of_queue+1; j++)
-            printf(" ");
-        printf("^\n");
-        printf("empty: %d\n\n", is_queue_empty());
-
-        empty_queue();
-        printArray(queue, 10);
-        printf("%I64u", top_of_queue);
-        for (int j = 0; j < 2*top_of_queue+1; j++)
-            printf(" ");
-        printf("^\n");
-        printf("empty: %d\n", is_queue_empty());
-
-        return 0;
-    }
-
-#endif  //TEST
+//
+//#ifdef TEST     // Sólo si se define TEST
+//                // Es la prueba para verificar el funcionamiento de la librería.
+//
+//    static void printArray (event_t array[], unsigned int size) {
+//        printf("[ ");
+//        for (int i = 0; i < size; i++) {
+//            printf("%u ", array[i]);
+//        }
+//        printf("]\n");
+//    }
+//
+//    int main() {
+//        for (int i = 1 ; i < 10 ; i++) {
+//            add_event(i);
+//            printArray(queue, 10);
+//            printf("%I64u", top_of_queue);
+//            for (int j = 0; j < 2*top_of_queue+1; j++)
+//                printf(" ");
+//            printf("^\n");
+//        }
+//        printf("\n\n");
+//        for (int i = 0 ; i < 10 ; i++) {
+//            printf("%u\n", get_next_event());
+//            printArray(queue, 10);
+//            printf("%I64u", top_of_queue);
+//            for (int j = 0; j < 2*top_of_queue+1; j++)
+//                printf(" ");
+//            printf("^\n\n");
+//        }
+//        add_event(7);
+//        printArray(queue, 10);
+//        printf("%I64u", top_of_queue);
+//        for (int j = 0; j < 2*top_of_queue+1; j++)
+//            printf(" ");
+//        printf("^\n");
+//        printf("empty: %d\n\n", is_queue_empty());
+//
+//        empty_queue();
+//        printArray(queue, 10);
+//        printf("%I64u", top_of_queue);
+//        for (int j = 0; j < 2*top_of_queue+1; j++)
+//            printf(" ");
+//        printf("^\n");
+//        printf("empty: %d\n", is_queue_empty());
+//
+//        return 0;
+//    }
+//
+//#endif  //TEST

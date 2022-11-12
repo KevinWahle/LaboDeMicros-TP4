@@ -137,7 +137,7 @@ int main(void) {
                 "App Task Start",
                  TaskStart,
                  0u,
-                20u,  //  TASKSTART_PRIO,
+                2u,  //  TASKSTART_PRIO,
                 &TaskStartStk[0u],
                 (TASKSTART_STK_SIZE / 10u),
                  TASKSTART_STK_SIZE,

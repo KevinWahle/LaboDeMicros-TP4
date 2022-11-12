@@ -17,7 +17,7 @@
 //#include "timer/timer.h"
 #include <stdio.h>
 #include "display/dispArr.h"
-//// #include "LEDMux/LEDMux.h"
+#include "LEDMux/LEDMux.h"
 
 #include <os.h>
 #include "os_cfg_app.h"
@@ -411,7 +411,7 @@ void verifyPass(){
 **********************************************************/
 void admin_allow_access(){
     init_admin_menu();
-//    LEDMuxSetForTime(2, OPENTIME);
+    LEDMuxSetForTime(2, OPENTIME);
 }
 
 void init_admin_menu(){
@@ -460,7 +460,7 @@ void click_menu_Admin(){
 
 void user_allow_access(){
     init_menu();
-//    LEDMuxSetForTime(2, OPENTIME);
+    LEDMuxSetForTime(2, OPENTIME);
 }
 
 void init_menu(){

@@ -39,32 +39,38 @@ void init_queue();
 /**
  * @brief Agrega un evento a la cola
  * @param event evento a añadir a la cola
- * @return 1 si se completo, 0 si la cola está llena
+ * @return 1 si se completo, 0 si hay error
 */
 int add_event(event_t event);
 
-/**
- * @brief Obtiene el próximo evento en la cola
- * @return El próximo evento en la cola, NULL_EVENT si la cola está vacía
-*/
-event_t get_next_event(void);
+///**
+// * @brief Obtiene el próximo evento en la cola
+// * @return El próximo evento en la cola, NULL_EVENT si la cola está vacía
+//*/
+//event_t get_next_event(void);
 
 /**
- * @brief Omite el próximo elemento en la cola
- * @return 0 Si hubo éxito, 1 si la cola estaba vacía
+ * @brief Espera el proximo evento
+ * @return El próximo evento en la cola
 */
-int skip_event(void);
+event_t wait_for_event(void);
 
-/**
- * @brief Vacía la cola
-*/
-void empty_queue(void);
-
-/**
- * @brief Indica si la cola está vacía o no
- * @return 1 si la cola estaba vacía, caso contrario, 0
-*/
-int is_queue_empty(void);
+///**
+// * @brief Omite el próximo elemento en la cola
+// * @return 0 Si hubo éxito, 1 si la cola estaba vacía
+//*/
+//int skip_event(void);
+//
+///**
+// * @brief Vacía la cola
+//*/
+//void empty_queue(void);
+//
+///**
+// * @brief Indica si la cola está vacía o no
+// * @return 1 si la cola estaba vacía, caso contrario, 0
+//*/
+//int is_queue_empty(void);
 
 /*******************************************************************************
  ******************************************************************************/
