@@ -18,7 +18,7 @@
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 
-// Differents events supported by the encoder module
+// Different events supported by the encoder module
 typedef enum {ENC_LEFT, ENC_RIGHT, ENC_CLICK, ENC_LONG, ENC_DOUBLE} ENC_STATE;
 
 // typedef void (*encoderCb) (ENC_STATE state);

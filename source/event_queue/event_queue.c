@@ -10,6 +10,8 @@
 
 #include "event_queue.h"
 
+#include <os.h>
+
 #ifdef TEST     // Solo si se define TEST (-D TEST)
 #include <stdio.h>  // Solo para TEST
 #endif
@@ -22,13 +24,25 @@ static event_t queue[MAX_EVENTS];               // Arreglo con la lista de event
 
 static unsigned long int top_of_queue = 0;      // Indicador de la cantidad de eventos guardados.
 
+static OS_MUTEX mutex;
+static OS_ERR os_err;
+
 /*******************************************************************************
  *******************************************************************************
                         GLOBAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
 
+
+void init_queue() {
+    OSMutexCreate(&mutex, "EQ Mutex", &os_err);
+}
+
+
 int add_event(event_t event) {
+
+    // OSMutexPend(&mutex, 0U, );
+
     if (top_of_queue < MAX_EVENTS) {        // Si hay lugar en la cola
         for (int i = top_of_queue; i > 0 ; i--) {
             queue[i] = queue[i-1];              // Muevo todos los eventos 1 posición

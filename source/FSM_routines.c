@@ -17,7 +17,10 @@
 //#include "timer/timer.h"
 #include <stdio.h>
 #include "display/dispArr.h"
-#include "LEDMux/LEDMux.h"
+//// #include "LEDMux/LEDMux.h"
+
+#include <os.h>
+#include "os_cfg_app.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
@@ -30,6 +33,8 @@
 #define PASSRETENTION 	10000
 #define OPENTIME		5000
 #define ERROR_MSG		"Error"
+
+#define S_2_TICKS(x) ((x)*OS_CFG_TMR_TASK_RATE_HZ) 
 
 /*******************************************************************************
  * VARIABLES WITH GLOBAL SCOPE
@@ -61,13 +66,18 @@ static uint8_t add_id[IDSIZE]={NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULL
 static uint8_t actual_pass[PASSMAX]={NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR};
 static uint8_t add_pass[PASSMAX]={NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR};
 static uint8_t digitCounter;
-static tim_id_t idTimer;
+// static tim_id_t idTimer;
+
+static OS_TMR idShowTimer;
+static OS_TMR innactiveTimer;
+static OS_TMR passRetTimer;
+static OS_ERR os_err;
 
 static uint8_t actual_option = 0;           // Variable que marca la opcion del menú seleccionada.     
 
 void update_display(uint8_t* arr, uint8_t counter, bool password);
 void updateMenuDis(char* word);
-void setIDTimer_cb();
+void setIDTimer_cb(OS_TMR *p_tmr, void *p_arg);
 
 /*******************************************************************************
  *******************************************************************************
@@ -199,11 +209,38 @@ void used_id(){
 }  
 
 void setUpIDTimer(){
-    idTimer=timerGetId();
+    // idTimer=timerGetId();
+    OSTmrCreate(	(OS_TMR *)&idShowTimer,
+					(CPU_CHAR *)"idShowTimer",
+					(OS_TICK )S_2_TICKS(ID_SHOW_TIME/1000.0),
+					(OS_TICK )0,
+					(OS_OPT )OS_OPT_TMR_ONE_SHOT,
+					(OS_TMR_CALLBACK_PTR)setIDTimer_cb,
+					(void *)0,
+					(OS_ERR *)&os_err);
+
+    OSTmrCreate(	(OS_TMR *)&innactiveTimer,
+					(CPU_CHAR *)"innactiveTimer",
+					(OS_TICK )S_2_TICKS(INACTIVITYTIME/1000.0),
+					(OS_TICK )0,
+					(OS_OPT )OS_OPT_TMR_ONE_SHOT,
+					(OS_TMR_CALLBACK_PTR)setIDTimer_cb,
+					(void *)0,
+					(OS_ERR *)&os_err);
+
+    OSTmrCreate(	(OS_TMR *)&passRetTimer,
+					(CPU_CHAR *)"passRetTimer",
+					(OS_TICK )S_2_TICKS(PASSRETENTION/1000.0),
+					(OS_TICK )0,
+					(OS_OPT )OS_OPT_TMR_ONE_SHOT,
+					(OS_TMR_CALLBACK_PTR)setIDTimer_cb,
+					(void *)0,
+					(OS_ERR *)&os_err);
 }
 
 void setIDTimer(){
-    timerStart(idTimer, TIMER_MS2TICKS(ID_SHOW_TIME), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+    // timerStart(idTimer, TIMER_MS2TICKS(ID_SHOW_TIME), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+    OSTmrStart(&idShowTimer, &os_err);
     char char_id[IDSIZE+1];
 
     for(uint8_t digit=0; digit<IDSIZE; digit++){
@@ -215,7 +252,8 @@ void setIDTimer(){
 }
 
 void add_setIDTimer(){
-    timerStart(idTimer, TIMER_MS2TICKS(ID_SHOW_TIME), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+    // timerStart(idTimer, TIMER_MS2TICKS(ID_SHOW_TIME), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+    OSTmrStart(&idShowTimer, &os_err);
     char char_id[IDSIZE+1];
 
     for(uint8_t digit=0; digit<IDSIZE; digit++){
@@ -226,7 +264,7 @@ void add_setIDTimer(){
     dispArrSlideOnce(char_id);
 }
 
-void setIDTimer_cb(){
+void setIDTimer_cb(OS_TMR *p_tmr, void *p_arg){
     add_event(TIMEOUT);
 }
 
@@ -373,7 +411,7 @@ void verifyPass(){
 **********************************************************/
 void admin_allow_access(){
     init_admin_menu();
-    LEDMuxSetForTime(2, OPENTIME);
+//    LEDMuxSetForTime(2, OPENTIME);
 }
 
 void init_admin_menu(){
@@ -422,7 +460,7 @@ void click_menu_Admin(){
 
 void user_allow_access(){
     init_menu();
-    LEDMuxSetForTime(2, OPENTIME);
+//    LEDMuxSetForTime(2, OPENTIME);
 }
 
 void init_menu(){
@@ -523,7 +561,8 @@ void IDcardCb (bool state, const char* mydata){
 }
 
 void inactivityTimer(){
-    timerStart(idTimer, TIMER_MS2TICKS(INACTIVITYTIME), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+    // timerStart(idTimer, TIMER_MS2TICKS(INACTIVITYTIME), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+    OSTmrStart(&innactiveTimer, &os_err);
 }
 /**********************************************************
 *********************  DISPLAY   **************************
@@ -553,7 +592,8 @@ void errorScreen() {
 
 void errorPassScreen(){
     errorScreen();
-    timerStart(idTimer, TIMER_MS2TICKS(PASSRETENTION), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+//    timerStart(idTimer, TIMER_MS2TICKS(PASSRETENTION), TIM_MODE_SINGLESHOT, setIDTimer_cb);
+    OSTmrStart(&passRetTimer, &os_err);
 }
 
 
@@ -603,4 +643,3 @@ void updateListDis(uint8_t* id){
 void doNothing() {
     return;
 }
-

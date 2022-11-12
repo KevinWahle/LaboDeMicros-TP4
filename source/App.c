@@ -13,7 +13,7 @@
 #include "FSM_routines.h"
 #include "event_queue/event_queue.h"
 #include "userDatabase.h"
-#include "timer/timer.h"
+// #include "timer/timer.h"
 #include "magtek/MagtekWrapper.h"
 #include "display/dispArr.h"
 #include "encoder/encoder_hal.h"
@@ -36,12 +36,13 @@ static STATE* p_tabla_estado_actual;
 /* Función que se llama 1 vez, al comienzo del programa */
 void App_Init (void)
 {
-	timerInit();
-	Card2Init(IDcardCb);
-	encoderInit(encoderCallback);
-	LEDMuxInit();
+	// timerInit();
+	Card2Init();
+	encoderInit();
+	// LEDMuxInit();
 	dispArrInit();
 	init_Database();
+    setUpIDTimer();
 
 	p_tabla_estado_actual = ID_state;
 	id_init();

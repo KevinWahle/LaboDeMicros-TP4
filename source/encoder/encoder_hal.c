@@ -39,7 +39,7 @@ static OS_TCB EncoderTask;
 static CPU_STK TaskStk[TASK_STK_SIZE];
 
 OS_Q encoderQ;
-#define S_2_TICKS(x) ((x)*OS_CFG_TICK_RATE_HZ) 
+#define S_2_TICKS(x) ((x)*OS_CFG_TMR_TASK_RATE_HZ) 
 
 static OS_ERR os_err;
 static OS_TMR LongTimer;
@@ -50,11 +50,9 @@ static OS_TMR doubleTimer;
  */
 static void smEnconder(void *p_arg);
 
-
 void  TMRCallBack (OS_TMR *p_tmr, void *p_arg){
 	
 }
-
 
 bool encoderInit(){
 	// timerInit();

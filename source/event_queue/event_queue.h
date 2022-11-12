@@ -32,6 +32,11 @@ typedef uint16_t event_t;
  ******************************************************************************/
 
 /**
+ * @brief Inicializa la cola
+*/
+void init_queue();
+
+/**
  * @brief Agrega un evento a la cola
  * @param event evento a añadir a la cola
  * @return 1 si se completo, 0 si la cola está llena
