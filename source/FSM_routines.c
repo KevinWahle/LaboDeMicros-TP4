@@ -14,10 +14,10 @@
 #include "encoder/encoder_hal.h"
 #include "const.h"
 #include "userDatabase.h"
-//#include "timer/timer.h"
 #include <stdio.h>
 #include "display/dispArr.h"
 #include "LEDMux/LEDMux.h"
+#include "IOT/IOT.h"
 
 #include <os.h>
 #include "os_cfg_app.h"
@@ -412,6 +412,10 @@ void verifyPass(){
 void admin_allow_access(){
     init_admin_menu();
     LEDMuxSetForTime(2, OPENTIME);
+    //TODO: Send real floor data
+
+    IOTUpdate(1, 0, 1);
+
 }
 
 void init_admin_menu(){
@@ -461,6 +465,10 @@ void click_menu_Admin(){
 void user_allow_access(){
     init_menu();
     LEDMuxSetForTime(2, OPENTIME);
+    //TODO: Send real floor data
+
+    IOTUpdate(0xF0FF, 2, 3);
+
 }
 
 void init_menu(){

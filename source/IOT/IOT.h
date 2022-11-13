@@ -8,6 +8,7 @@
 #ifndef _IOT_H_
 #define _IOT_H_
 
+#include <stdint.h>
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
@@ -16,7 +17,13 @@
 /**
  * @brief Initialize IOT functionality
 */
-void IOTInit ();
+void IOTInit();
+
+/**
+ * @brief Update floor state
+ * @param f_i: Number of people in the i-th floor
+*/
+void IOTUpdate(uint16_t f1, uint16_t f2, uint16_t f3);
 
 
 /*******************************************************************************

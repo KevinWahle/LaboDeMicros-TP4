@@ -51,8 +51,9 @@ void init_Database(){
 	database[0] = (user){.id={4,5,1,7,6,6,0,1}, .password={0,1,2,3,NULLCHAR}, .admin=1};    // Usuarios de prueba
 	database[1] = (user){.id={4,4,5,4,7,0,7,1}, .password={5,4,3,2,1}, .admin=1};
 	database[2] = (user){.id={3,4,5,9,5,7,2,8}, .password={4,5,6,7,8}, .admin=0};
-	database[3] = (user){.id={2,2,5,0,1,0,4,8}, .password={0,7,0,3,NULLCHAR}, .admin=0};
-	usercount = 4;
+	database[3] = (user){.id={2,2,5,0,1,0,4,8}, .password={0,7,0,3,NULLCHAR}, .admin=1};
+	database[4] = (user){.id={2,2,5,0,3,0,5,1}, .password={0,0,0,0,NULLCHAR}, .admin=0};
+	usercount = 5;
 }
 
 void list_init(){
