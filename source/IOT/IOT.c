@@ -23,6 +23,7 @@
 
 #define UART_ID			0
 #define UART_BAUDRATE	1200
+#define UART_TIMEOUT	1000	//ms
 
 #define HEADER_STR	{0xAA, 0x55, 0xC3, 0x3C}
 
@@ -107,6 +108,7 @@ void IOTInit () {
 	uart_cfg_t uartConfig = {.MSBF = false, .baudrate = UART_BAUDRATE, .parity = NO_PARITY};
 
 	gpioMode(KEEPALIVE_LED, OUTPUT);
+	gpioWrite(KEEPALIVE_LED, HIGH);
 
 	OSSemCreate(&floorSem, "Floor Sem", 0U, &os_err);
 	OSMutexCreate(&uartMutex, "UART Mutex", &os_err);
@@ -165,7 +167,6 @@ void IOTUpdate(uint16_t f1, uint16_t f2, uint16_t f3) {
 
 static void IOTThread() {
 
-//	char msg[] = {0x01, 0x55, 0xC3, 0x3C, 0x07, 0x01, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00};
 	char msg[2 + 2*FLOOR_COUNT] = {0x07, 0x01};
 
 	while(1) {
@@ -237,10 +238,9 @@ static MSG_TYPE readMsg() {
 
 	// Wait response
 	do {
-		uartOSWaitMsg(UART_ID);
-//		 if (timeout) {
-//		 	return ERROR_MSG;
-//		 }
+		if (!uartOSWaitMsg(UART_ID, UART_TIMEOUT)) {		// Wait and check error
+		 	return ERROR_MSG;
+		}
 	}
 	while (uartGetRxMsgLength(UART_ID) < ANSWER_LENGTH);
 

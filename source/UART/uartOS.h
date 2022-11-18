@@ -53,8 +53,10 @@ void uartOSInit (uint8_t id, uart_cfg_t config);
 /**
  * @brief Waits for a byte to be received
  * @param id UART's number
+ * @param timeout in ms. 0 to disable
+ * @return true if message, false if error (timeout)
 */
-void uartOSWaitMsg(uint8_t id);
+bool uartOSWaitMsg(uint8_t id, uint32_t timeout);
 
 /**
  * @brief Check how many bytes were received

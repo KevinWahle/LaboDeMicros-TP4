@@ -15,6 +15,7 @@
 #include "MCAL/gpio.h"
 
 #include <os.h>
+#include <os_cfg_app.h>
 #include <stddef.h>
 
 /*******************************************************************************
@@ -38,6 +39,8 @@
 #define MIN(x, y)	((x) < (y) ? (x) : (y) )
 #define MAX(x, y)	((x) > (y) ? (x) : (y) )
 
+
+#define MS_2_TICKS(x) ((x)*OS_CFG_TICK_RATE_HZ/1000)
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
@@ -160,9 +163,13 @@ void uartOSInit (uint8_t id, uart_cfg_t config) {
 /**
  * @brief Waits for a byte to be received
  * @param id UART's number
+ * @param timeout in ms. 0 to disable
+ * @return true if message, false if error (timeout)
 */
-void uartOSWaitMsg(uint8_t id) {
-	OSSemPend(&RxSem[id], 0U, OS_OPT_PEND_BLOCKING, NULL, &os_err);
+bool uartOSWaitMsg(uint8_t id, uint32_t timeout) {
+	OS_ERR error;
+	OSSemPend(&RxSem[id], MS_2_TICKS(timeout), OS_OPT_PEND_BLOCKING, NULL, &error);
+	return error == OS_ERR_NONE;
 }
 
 
