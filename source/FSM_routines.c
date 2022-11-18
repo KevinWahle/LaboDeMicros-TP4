@@ -66,7 +66,6 @@ static uint8_t add_id[IDSIZE]={NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULL
 static uint8_t actual_pass[PASSMAX]={NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR};
 static uint8_t add_pass[PASSMAX]={NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR,NULLCHAR};
 static uint8_t digitCounter;
-// static tim_id_t idTimer;
 
 static OS_TMR idShowTimer;
 static OS_TMR innactiveTimer;
@@ -78,6 +77,9 @@ static uint8_t actual_option = 0;           // Variable que marca la opcion del 
 void update_display(uint8_t* arr, uint8_t counter, bool password);
 void updateMenuDis(char* word);
 void setIDTimer_cb(OS_TMR *p_tmr, void *p_arg);
+
+
+static uint8_t floors[3] = {0, 0, 0};
 
 /*******************************************************************************
  *******************************************************************************
@@ -412,9 +414,11 @@ void verifyPass(){
 void admin_allow_access(){
     init_admin_menu();
     LEDMuxSetForTime(2, OPENTIME);
-    //TODO: Send real floor data
-
-    IOTUpdate(1, 0, 1);
+    
+    bool entrando = !isInside(actual_id);
+    floors[getFloor(actual_id)-1] += entrando ? 1 : -1;
+    setInside(actual_id, entrando);
+    IOTUpdate(floors[0], floors[1], floors[2]);
 
 }
 
@@ -465,9 +469,11 @@ void click_menu_Admin(){
 void user_allow_access(){
     init_menu();
     LEDMuxSetForTime(2, OPENTIME);
-    //TODO: Send real floor data
-
-    IOTUpdate(0xF0FF, 2, 3);
+    
+    bool entrando = !isInside(actual_id);
+    floors[getFloor(actual_id)-1] += (entrando ? 1 : -1);
+    setInside(actual_id, entrando);
+    IOTUpdate(floors[0], floors[1], floors[2]);
 
 }
 

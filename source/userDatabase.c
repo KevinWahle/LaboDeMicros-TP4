@@ -16,6 +16,7 @@
 
 #define MAXUSER			100
 
+
 /*******************************************************************************
  * GLOBAL VARIABLES
  ******************************************************************************/
@@ -24,6 +25,8 @@ typedef struct{
     uint8_t id[IDSIZE];
     uint8_t password[PASSMAX];
     uint8_t admin;
+    uint8_t floor;
+    bool inside;
 } user;
 
 static uint16_t indice;
@@ -48,12 +51,13 @@ void updateListDis(uint8_t* id);
  ******************************************************************************/
 
 void init_Database(){
-	database[0] = (user){.id={4,5,1,7,6,6,0,1}, .password={0,1,2,3,NULLCHAR}, .admin=1};    // Usuarios de prueba
-	database[1] = (user){.id={4,4,5,4,7,0,7,1}, .password={5,4,3,2,1}, .admin=1};
-	database[2] = (user){.id={3,4,5,9,5,7,2,8}, .password={4,5,6,7,8}, .admin=0};
-	database[3] = (user){.id={2,2,5,0,1,0,4,8}, .password={0,7,0,3,NULLCHAR}, .admin=1};
-	database[4] = (user){.id={2,2,5,0,3,0,5,1}, .password={0,0,0,0,NULLCHAR}, .admin=0};
-	usercount = 5;
+	database[0] = (user){.id={4,5,1,7,6,6,0,1}, .password={0,1,2,3,NULLCHAR}, .admin=0, .floor=1, .inside=false};    // Usuarios de prueba
+	database[1] = (user){.id={4,4,5,4,7,0,7,1}, .password={5,4,3,2,1}, .admin=1, .floor=1, .inside=false}; // ITBA Sergio
+	database[2] = (user){.id={3,4,5,9,5,7,2,8}, .password={4,5,6,7,8}, .admin=1, .floor=2, .inside=false}; 
+	database[3] = (user){.id={2,2,5,0,1,0,4,8}, .password={0,7,0,3,NULLCHAR}, .admin=0, .floor=2, .inside=false};    // Galeno 1
+	database[4] = (user){.id={2,2,5,0,3,0,5,1}, .password={0,0,0,0,NULLCHAR}, .admin=0, .floor=3, .inside=false};    // Galeno 2
+   	database[5] = (user){.id={4,4,5,4,8,7,1,5}, .password={5,4,3,2,1}, .admin=1, .floor=3, .inside=false}; // ITBA Basili
+	usercount = 6;
 }
 
 void list_init(){
@@ -233,6 +237,34 @@ uint8_t actualType(){
     }
     else 
         return NORMAL;
+}
+
+uint8_t getFloor(uint8_t* id){
+    uint8_t indice=searchUser(id);
+    if (indice>=MAXUSER){
+        return false;
+    }
+
+    return database[indice].floor;
+}
+
+bool isInside(uint8_t* id){
+    uint8_t indice=searchUser(id);
+    if (indice>=MAXUSER){
+        return false;
+    }
+
+    return database[indice].inside;
+}
+
+bool setInside(uint8_t* id, bool value){
+    uint8_t indice=searchUser(id);
+    if (indice>=MAXUSER){
+        return false;
+    }
+
+    database[indice].inside=value;
+    return true;
 }
 
 /*******************************************************************************

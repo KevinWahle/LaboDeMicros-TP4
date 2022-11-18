@@ -11,7 +11,8 @@
 
 #include "IOT.h"
 #include "../UART/uartOS.h"
-#include "../LEDMux/LEDMux.h"
+// #include "../LEDMux/LEDMux.h"
+#include "MCAL/gpio.h"
 
 #include <os.h>
 #include <stddef.h>
@@ -36,7 +37,7 @@
 #define KEEPALIVE_TIME	3	// seconds
 #define IOTINTERVAL_TIME	20	// seconds
 
-#define KEEPALIVE_LED	1
+#define KEEPALIVE_LED	PORTNUM2PIN(PE, 26)
 
 #define FLOOR_COUNT		3
 
@@ -104,6 +105,8 @@ static uint16_t floors[FLOOR_COUNT];
 void IOTInit () {
 
 	uart_cfg_t uartConfig = {.MSBF = false, .baudrate = UART_BAUDRATE, .parity = NO_PARITY};
+
+	gpioMode(KEEPALIVE_LED, OUTPUT);
 
 	OSSemCreate(&floorSem, "Floor Sem", 0U, &os_err);
 	OSMutexCreate(&uartMutex, "UART Mutex", &os_err);
@@ -216,10 +219,12 @@ static void keepAliveTask() {
 
 		// Check response
 		if (res == KEEPALIVEOK_MSG) {
-			LEDMuxSet(KEEPALIVE_LED);
+			// LEDMuxSet(KEEPALIVE_LED);
+			gpioWrite(KEEPALIVE_LED, LOW);
 		}
 		else {
-			LEDMuxOff();
+			// LEDMuxOff();
+			gpioWrite(KEEPALIVE_LED, HIGH);
 		}
 
 		// Wait for next keepalive

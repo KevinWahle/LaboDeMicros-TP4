@@ -91,6 +91,22 @@ void toggleUser();
 */
 uint8_t actualType();
 
+/**
+ * @brief Retorna el piso
+*/
+uint8_t getFloor(uint8_t* id);
+
+/**
+ * @brief Retorna si esta adentro o no
+*/
+bool isInside(uint8_t* id);
+
+/**
+ * @brief Settea si el usuario esta adentro o afuera
+ * Devuelve TRUE si ok, FALSE si fallo
+*/
+bool setInside(uint8_t* id, bool value);
+
 /*******************************************************************************
  ******************************************************************************/
 
