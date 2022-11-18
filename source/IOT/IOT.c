@@ -72,14 +72,14 @@ static const char headerStr[] = HEADER_STR;
  ******************************************************************************/
 
 /* IOT Task */
-#define TASK_STK_SIZE			256u
+#define TASK_STK_SIZE			512U
 #define TASK_STK_SIZE_LIMIT	(TASK_STK_SIZE / 10u)
 #define TASK_PRIO				15u
 static OS_TCB IOTTask;
 static CPU_STK TaskStk[TASK_STK_SIZE];
 
 /* keep alive Task */
-#define TASKKA_STK_SIZE			256u
+#define TASKKA_STK_SIZE			100U
 #define TASKKA_STK_SIZE_LIMIT	(TASK_STK_SIZE / 10u)
 #define TASKKA_PRIO				25u
 
@@ -188,7 +188,7 @@ static void IOTThread() {
 			}
 			uartOSWriteMsg(UART_ID, msg, sizeof(msg));	// send data
 
-		} while (readMsg() != DATAOK_MSG);		// Repeat until OK
+		} while (readMsg() != DATAOK_MSG && false);		// Repeat until OK
 
 		// Free UART
 		OSMutexPost(&uartMutex, OS_OPT_POST_NONE, &os_err);

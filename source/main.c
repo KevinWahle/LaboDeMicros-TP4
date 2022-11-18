@@ -2,15 +2,11 @@
 #include "MCAL/board.h"
 #include  <os.h>
 
-//#include "const.h"
-//#include "FSM_table.h"
 #include "FSM_routines.h"
 #include "event_queue/event_queue.h"
-//#include "userDatabase.h"
 #include "magtek/MagtekWrapper.h"
 #include "display/dispArr.h"
 #include "encoder/encoder_hal.h"
-// #include "LEDMux/LEDMux.h"
 #include <stddef.h>
 #include <stdio.h>
 
@@ -21,14 +17,14 @@ static OS_TCB TaskStartTCB;
 static CPU_STK TaskStartStk[TASKSTART_STK_SIZE];
 
 /* Encoder Task */
-#define TASK2_STK_SIZE			256u
+#define TASK2_STK_SIZE			100U
 #define TASK2_STK_SIZE_LIMIT	(TASK2_STK_SIZE / 10u)
 #define TASK2_PRIO              3u
 static OS_TCB encoder2EventTask;
 static CPU_STK Task2Stk[TASK2_STK_SIZE];
 
 /* Card Task */
-#define TASK3_STK_SIZE			256u
+#define TASK3_STK_SIZE			100u
 #define TASK3_STK_SIZE_LIMIT	(TASK3_STK_SIZE / 10u)
 #define TASK3_PRIO              3u
 static OS_TCB card2EventTask;
@@ -137,7 +133,7 @@ int main(void) {
                 "App Task Start",
                  TaskStart,
                  0u,
-                2u,  //  TASKSTART_PRIO,
+                TASKSTART_PRIO,
                 &TaskStartStk[0u],
                 (TASKSTART_STK_SIZE / 10u),
                  TASKSTART_STK_SIZE,

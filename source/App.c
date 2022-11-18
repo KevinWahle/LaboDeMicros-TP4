@@ -13,7 +13,6 @@
 #include "FSM_routines.h"
 #include "event_queue/event_queue.h"
 #include "userDatabase.h"
-// #include "timer/timer.h"
 #include "magtek/MagtekWrapper.h"
 #include "display/dispArr.h"
 #include "encoder/encoder_hal.h"
